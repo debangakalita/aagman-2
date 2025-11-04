@@ -1,0 +1,61 @@
+/* Apply Cormorant font family to all elements */
+body {
+    font-family: 'Cormorant', serif !important;
+}
+
+/* Ensure all text elements use Cormorant */
+h1, h2, h3, h4, h5, h6, p, span, div, a {
+    font-family: 'Cormorant', serif !important;
+}
+
+/* Disable browser scroll */
+html, body {
+    overflow: hidden;
+    height: 100%;
+    width: 100%;
+    position: fixed;
+}
+
+/* Additional cross-browser compatibility fixes */
+* {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Ensure images are responsive and don't overflow */
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* First page image - fixed height on large screens */
+#mainImage {
+    aspect-ratio: 600 / 696.77;
+}
+
+@media (min-width: 1024px) {
+    #mainImage {
+        height: 600px;
+        aspect-ratio: auto;
+    }
+}
+
+/* Page transition styles */
+.page-section {
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+}
+
+/* Smooth transitions */
+.page-section.translate-x-0 {
+    transform: translateX(0);
+}
+
+.page-section.translate-x-full {
+    transform: translateX(100%);
+}
+
+.page-section.-translate-x-full {
+    transform: translateX(-100%);
+}

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aagman - Born in Silence, Heard by the World</title>
+    <!-- Normalize CSS for cross-browser compatibility -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css">
+    <!-- Google Fonts - Cormorant -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'serif': ['Cormorant', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Custom CSS for font family and additional styles -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-white text-[#474747] overflow-hidden">
+    <div id="pages-container" class="relative w-full h-screen">
+        <!-- Page 1 -->
+        <section class="page-section active fixed inset-0 w-full h-full flex items-center justify-center transition-all duration-1000 ease-in-out">
+            <header class="absolute top-0 right-0 p-8 lg:p-10 z-[100]">
+                <div class="flex flex-col gap-1.5 cursor-pointer w-6 hover:[&>span]:bg-[#A40119] transition-all duration-300" id="menuIcon">
+                    <span class="w-6 h-0.5 bg-black transition-all duration-300"></span>
+                    <span class="w-6 h-0.5 bg-black transition-all duration-300"></span>
+                    <span class="w-6 h-0.5 bg-black transition-all duration-300"></span>
+                </div>
+            </header>
+
+            <main class="flex flex-col lg:flex-row items-center justify-center min-h-screen pt-20 pb-32 pl-4 sm:pl-6 md:pl-8 lg:pl-0 pr-4 sm:pr-6 md:pr-8 lg:pr-[40px] max-w-7xl gap-10 md:gap-14 lg:gap-16 w-full">
+                <div class="w-full lg:w-[60%] flex items-center justify-center h-full">
+                    <img src="images/1.jpg" alt="Man sitting on rocks by the water in Ladakh" id="mainImage" class="w-full max-w-[300px] sm:max-w-[400px] md:max-w-[500px] lg:max-w-[600px] h-auto lg:h-[600px] object-cover rounded-[12px] shadow-lg">
+                </div>
+
+                <div class="w-full lg:w-[40%] flex flex-col justify-end lg:self-end pt-8 md:pt-10 pb-0 max-w-lg lg:max-w-[544.92px]">
+                    <h1 class="text-[22.4px] sm:text-[28.8px] md:text-[35.2px] lg:text-[48px] font-medium italic text-[#BA8638] leading-[111%] tracking-[-0.01em] mb-[18px] max-w-[544.92px]">
+                        Aagman, Born in Silence, Heard by the World.
+                    </h1>
+                    <p class="text-[12.6px] md:text-[14px] lg:text-[14px] font-normal text-[#474747] leading-relaxed tracking-wide mb-[18px] max-w-[400px]">
+                        In the silent grandeur of Ladakh, where mountains stand like ancient kings and the wind moves with the grace of a royal procession, I found my truest rhythm. This land did not speak in words, it spoke in silence, in stillness, in soul. Aagman was born from that noble quiet, where patience became poetry and music became destiny.
+                    </p>
+                    <p class="text-[12px] text-[#BA8638]">
+                        authored by <span class="text-[#BA8638] font-medium">Debanjan Biswas</span>
+                    </p>
+                </div>
+            </main>
+        </section>
+
+        <!-- Page 2 -->
+        <section class="page-section fixed inset-0 w-full h-full flex items-center justify-center transition-all duration-1000 ease-in-out translate-x-full opacity-0">
+            <header class="absolute top-0 right-0 p-8 lg:p-10 z-[100]">
+                <div class="flex flex-col gap-1.5 cursor-pointer w-6 hover:[&>span]:bg-[#A40119] transition-all duration-300">
+                    <span class="w-6 h-0.5 bg-black transition-all duration-300"></span>
+                    <span class="w-6 h-0.5 bg-black transition-all duration-300"></span>
+                    <span class="w-6 h-0.5 bg-black transition-all duration-300"></span>
+                </div>
+            </header>
+
+            <div class="w-full max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-[40px] py-20">
+                <!-- Your second page content here -->
+                <div class="text-center">
+                    <h2 class="text-4xl md:text-5xl lg:text-6xl font-medium italic text-[#BA8638] mb-8">
+                        Your Second Page Title
+                    </h2>
+                    <p class="text-lg md:text-xl text-[#474747] max-w-3xl mx-auto leading-relaxed">
+                        Your second page content goes here...
+                    </p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <footer class="fixed bottom-0 left-0 right-0 py-8 flex justify-center items-center bg-transparent z-10">
+        <div class="flex items-center gap-4">
+            <span class="text-2xl text-[#BA8638] cursor-pointer transition-all duration-300 font-light hover:text-[#A40119] hover:scale-125 left-arrow">←</span>
+            <span class="text-2xl text-[#BA8638] cursor-pointer transition-all duration-300 font-light hover:text-[#A40119] hover:scale-125 right-arrow">→</span>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
+
