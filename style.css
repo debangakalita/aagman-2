@@ -40,6 +40,17 @@ img {
     }
 }
 
+/* Page 1: Bottom align text with image on screens taller than 850px */
+@media (min-height: 851px) {
+    .page-section:first-child main {
+        align-items: flex-end !important;
+    }
+    
+    .page-section:first-child main > div:first-child {
+        align-items: flex-end !important;
+    }
+}
+
 /* Page transition styles */
 .page-section {
     will-change: transform, opacity;

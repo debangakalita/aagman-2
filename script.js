@@ -32,12 +32,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Function to go to a specific page
     function goToPage(pageIndex) {
-        // Prevent navigation if already transitioning or out of bounds
-        if (isTransitioning || pageIndex < 0 || pageIndex >= pages.length) {
+        // Prevent navigation if out of bounds
+        if (pageIndex < 0 || pageIndex >= pages.length) {
             return;
         }
 
-        isTransitioning = true;
+        // Note: isTransitioning is now set in handleNavigation before calling this function
         const previousPage = currentPage;
         currentPage = pageIndex;
 
@@ -66,12 +66,20 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Unified scroll/trackpad/keyboard handler
     let lastActionTime = 0;
-    let isProcessingAction = false; // Additional flag to prevent concurrent processing
-    const actionDebounceDelay = 1100; // milliseconds - slightly longer than transition duration
+    const actionDebounceDelay = 1200; // milliseconds - longer than transition duration to ensure no overlap
 
     function handleNavigation(direction) {
-        // Don't process if we're currently transitioning or processing an action
-        if (isTransitioning || isProcessingAction) {
+        // CRITICAL: Check and set flags in a single atomic operation to prevent race conditions
+        // This must be the FIRST check - if transitioning, immediately return
+        if (isTransitioning) {
+            return false;
+        }
+
+        // Check bounds BEFORE setting any flags
+        // This prevents isTransitioning from being stuck if we're at the edge
+        const nextPageIndex = direction > 0 ? currentPage + 1 : currentPage - 1;
+        if (nextPageIndex < 0 || nextPageIndex >= pages.length) {
+            // Already at the edge, don't process but don't block future scrolls
             return false;
         }
 
@@ -79,37 +87,33 @@ document.addEventListener('DOMContentLoaded', function() {
         const currentTime = Date.now();
 
         // Debounce: only process if enough time has passed since last action
+        // This is the SECOND check - prevents rapid-fire events
         if (currentTime - lastActionTime < actionDebounceDelay) {
             return false;
         }
 
-        // Set processing flag immediately to prevent concurrent calls
-        isProcessingAction = true;
-        
-        // Immediately update last action time BEFORE processing
-        // This prevents any other actions from being processed
+        // ATOMIC OPERATION: Set all flags IMMEDIATELY and synchronously
+        // This prevents any other event from processing - MUST happen before goToPage
+        isTransitioning = true;
         lastActionTime = currentTime;
 
-        // Navigate based on direction
-        // goToPage will set isTransitioning = true, preventing further actions
-        if (direction > 0) {
-            // Next page
-            goToPage(currentPage + 1);
-        } else {
-            // Previous page
-            goToPage(currentPage - 1);
-        }
-
-        // Reset processing flag after a short delay (allows goToPage to set isTransitioning)
-        setTimeout(() => {
-            isProcessingAction = false;
-        }, 50);
+        // Navigate based on direction - call synchronously
+        // isTransitioning is already set, so no other events can process
+        // We already checked bounds above, so this will always succeed
+        goToPage(nextPageIndex);
 
         return true;
     }
 
     // Mouse wheel and trackpad handler
     function handleWheel(e) {
+        // EARLY EXIT: If already transitioning, prevent default and return immediately
+        // This is the first line of defense
+        if (isTransitioning) {
+            e.preventDefault();
+            return;
+        }
+
         // Prevent default scrolling
         e.preventDefault();
 
@@ -145,6 +149,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Keyboard navigation
     document.addEventListener('keydown', function(e) {
+        // EARLY EXIT: If already transitioning, prevent default and return immediately
+        if (isTransitioning) {
+            if (e.key === 'ArrowDown' || e.key === 'ArrowRight' || e.key === 'PageDown' ||
+                e.key === 'ArrowUp' || e.key === 'ArrowLeft' || e.key === 'PageUp') {
+                e.preventDefault();
+            }
+            return;
+        }
+
         // Next page: ArrowDown, ArrowRight, PageDown
         if (e.key === 'ArrowDown' || e.key === 'ArrowRight' || e.key === 'PageDown') {
             e.preventDefault();
