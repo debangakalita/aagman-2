@@ -64,39 +64,78 @@ document.addEventListener('DOMContentLoaded', function() {
         }, transitionDuration);
     }
 
-    // Mouse wheel event handler
-    let wheelTimeout;
-    let lastWheelDirection = 0;
+    // Unified scroll/trackpad/keyboard handler
+    let lastActionTime = 0;
+    let isProcessingAction = false; // Additional flag to prevent concurrent processing
+    const actionDebounceDelay = 1100; // milliseconds - slightly longer than transition duration
 
+    function handleNavigation(direction) {
+        // Don't process if we're currently transitioning or processing an action
+        if (isTransitioning || isProcessingAction) {
+            return false;
+        }
+
+        // Get current time
+        const currentTime = Date.now();
+
+        // Debounce: only process if enough time has passed since last action
+        if (currentTime - lastActionTime < actionDebounceDelay) {
+            return false;
+        }
+
+        // Set processing flag immediately to prevent concurrent calls
+        isProcessingAction = true;
+        
+        // Immediately update last action time BEFORE processing
+        // This prevents any other actions from being processed
+        lastActionTime = currentTime;
+
+        // Navigate based on direction
+        // goToPage will set isTransitioning = true, preventing further actions
+        if (direction > 0) {
+            // Next page
+            goToPage(currentPage + 1);
+        } else {
+            // Previous page
+            goToPage(currentPage - 1);
+        }
+
+        // Reset processing flag after a short delay (allows goToPage to set isTransitioning)
+        setTimeout(() => {
+            isProcessingAction = false;
+        }, 50);
+
+        return true;
+    }
+
+    // Mouse wheel and trackpad handler
     function handleWheel(e) {
         // Prevent default scrolling
         e.preventDefault();
 
-        // Clear existing timeout
-        clearTimeout(wheelTimeout);
-
-        // Determine scroll direction
-        const delta = e.deltaY || e.detail || -e.wheelDelta;
-        const direction = delta > 0 ? 1 : -1;
-
-        // Only process if direction changed or enough time has passed
-        if (direction !== lastWheelDirection || !wheelTimeout) {
-            lastWheelDirection = direction;
-
-            // Navigate based on scroll direction
-            if (direction > 0) {
-                // Scrolling down - go to next page
-                goToPage(currentPage + 1);
-            } else {
-                // Scrolling up - go to previous page
-                goToPage(currentPage - 1);
-            }
-
-            // Set timeout to prevent rapid scrolling
-            wheelTimeout = setTimeout(() => {
-                lastWheelDirection = 0;
-            }, transitionDuration);
+        // Check both vertical (deltaY) and horizontal (deltaX) scroll
+        // Trackpad gestures can send both, so we prioritize the larger one
+        const deltaY = e.deltaY || e.detail || -e.wheelDelta || 0;
+        const deltaX = e.deltaX || 0;
+        
+        // Determine which direction has more movement
+        const absDeltaY = Math.abs(deltaY);
+        const absDeltaX = Math.abs(deltaX);
+        
+        let direction = 0;
+        
+        if (absDeltaY > absDeltaX) {
+            // Vertical scroll: down/right = next page, up/left = previous page
+            direction = deltaY > 0 ? 1 : -1;
+        } else if (absDeltaX > 0) {
+            // Horizontal scroll: right/down = next page, left/up = previous page
+            direction = deltaX > 0 ? 1 : -1;
+        } else {
+            // No significant movement
+            return;
         }
+
+        handleNavigation(direction);
     }
 
     // Add wheel event listeners (cross-browser compatibility)
@@ -104,14 +143,17 @@ document.addEventListener('DOMContentLoaded', function() {
     window.addEventListener('mousewheel', handleWheel, { passive: false });
     window.addEventListener('DOMMouseScroll', handleWheel, { passive: false });
 
-    // Keyboard navigation (optional)
+    // Keyboard navigation
     document.addEventListener('keydown', function(e) {
-        if (e.key === 'ArrowDown' || e.key === 'PageDown') {
+        // Next page: ArrowDown, ArrowRight, PageDown
+        if (e.key === 'ArrowDown' || e.key === 'ArrowRight' || e.key === 'PageDown') {
             e.preventDefault();
-            goToPage(currentPage + 1);
-        } else if (e.key === 'ArrowUp' || e.key === 'PageUp') {
+            handleNavigation(1);
+        } 
+        // Previous page: ArrowUp, ArrowLeft, PageUp
+        else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft' || e.key === 'PageUp') {
             e.preventDefault();
-            goToPage(currentPage - 1);
+            handleNavigation(-1);
         }
     });
 
