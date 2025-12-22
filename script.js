@@ -6,13 +6,102 @@ document.addEventListener('DOMContentLoaded', function() {
     const transitionDuration = 1000; // milliseconds
 
     // Menu toggle functionality
+    const navMenu = document.getElementById('navMenu');
     const menuIcon = document.getElementById('menuIcon');
+    const closeMenuIcon = document.getElementById('closeMenuIcon');
+    const navLinks = document.querySelectorAll('.nav-link');
+    let isMenuOpen = false;
+
+    // Function to toggle menu
+    function toggleMenu() {
+        isMenuOpen = !isMenuOpen;
+        if (navMenu) {
+            navMenu.classList.toggle('open', isMenuOpen);
+        }
+        // Toggle active state on all menu icons
+        if (menuIcon) {
+            menuIcon.classList.toggle('active', isMenuOpen);
+        }
+        const allMenuToggles = document.querySelectorAll('.menu-toggle');
+        allMenuToggles.forEach(toggle => {
+            if (toggle !== menuIcon) {
+                toggle.classList.toggle('active', isMenuOpen);
+            }
+        });
+        // Prevent body scroll when menu is open
+        document.body.style.overflow = isMenuOpen ? 'hidden' : '';
+    }
+
+    // Menu icon click handler
     if (menuIcon) {
-        menuIcon.addEventListener('click', function() {
-            // Menu functionality can be added here
-            console.log('Menu clicked');
+        menuIcon.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            toggleMenu();
         });
     }
+
+    // Also handle clicks on other hamburger menus (if they exist)
+    const allMenuIcons = document.querySelectorAll('.menu-toggle');
+    allMenuIcons.forEach(icon => {
+        if (icon !== menuIcon) {
+            icon.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                toggleMenu();
+            });
+        }
+    });
+
+    // Navigation link click handlers
+    navLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const pageIndex = parseInt(this.getAttribute('data-page'));
+            if (!isNaN(pageIndex)) {
+                // Close menu
+                isMenuOpen = false;
+                if (navMenu) {
+                    navMenu.classList.remove('open');
+                }
+                if (menuIcon) {
+                    menuIcon.classList.remove('active');
+                }
+                const allMenuToggles = document.querySelectorAll('.menu-toggle');
+                allMenuToggles.forEach(toggle => {
+                    toggle.classList.remove('active');
+                });
+                document.body.style.overflow = '';
+                // Navigate to page
+                goToPage(pageIndex);
+            }
+        });
+    });
+
+    // Close menu when clicking outside
+    if (navMenu) {
+        navMenu.addEventListener('click', function(e) {
+            if (e.target === navMenu) {
+                toggleMenu();
+            }
+        });
+    }
+
+    // Close menu icon click handler
+    if (closeMenuIcon) {
+        closeMenuIcon.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            toggleMenu();
+        });
+    }
+
+    // Close menu on escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && isMenuOpen) {
+            toggleMenu();
+        }
+    });
 
     // Navigation arrows functionality
     const leftArrow = document.querySelector('.left-arrow');

@@ -70,3 +70,48 @@ img {
 .page-section.-translate-x-full {
     transform: translateX(-100%);
 }
+
+/* Navigation Menu Styles */
+#navMenu {
+    overflow-y: auto;
+}
+
+#navMenu.open {
+    transform: translateX(0);
+}
+
+/* Hamburger Menu Animation */
+#menuIcon.active .menu-line:nth-child(1),
+.menu-toggle.active .menu-line:nth-child(1) {
+    transform: rotate(45deg) translate(5px, 5px);
+}
+
+#menuIcon.active .menu-line:nth-child(2),
+.menu-toggle.active .menu-line:nth-child(2) {
+    opacity: 0;
+}
+
+#menuIcon.active .menu-line:nth-child(3),
+.menu-toggle.active .menu-line:nth-child(3) {
+    transform: rotate(-45deg) translate(7px, -6px);
+}
+
+/* Navigation Links */
+.nav-link {
+    position: relative;
+}
+
+.nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background-color: #BA8638;
+    transition: width 0.3s ease;
+}
+
+.nav-link:hover::after {
+    width: 100%;
+}
