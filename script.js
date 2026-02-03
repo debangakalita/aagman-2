@@ -194,20 +194,37 @@ document.addEventListener('DOMContentLoaded', function() {
         return true;
     }
 
-    // Mouse wheel and trackpad handler
+    // Mobile detection flag
+    let isMobileSize = window.innerWidth <= 768;
+    
+    // Update mobile flag on resize
+    window.addEventListener('resize', function() {
+        isMobileSize = window.innerWidth <= 768;
+    });
+
+    // Mouse wheel and trackpad handler (DESKTOP ONLY - screens > 768px)
     function handleWheel(e) {
+        // CRITICAL: Triple check to completely disable wheel page changes on mobile
+        // 1. Check cached mobile flag
+        // 2. Check current window width
+        // 3. Return immediately without any processing
+        if (isMobileSize || window.innerWidth <= 768) {
+            // IMPORTANT: Do not prevent default on mobile - allow natural scrolling
+            // Do not call handleNavigation - just return
+            return;
+        }
+
+        // Desktop only: Handle wheel for page transitions
         // EARLY EXIT: If already transitioning, prevent default and return immediately
-        // This is the first line of defense
         if (isTransitioning) {
             e.preventDefault();
             return;
         }
 
-        // Prevent default scrolling
+        // Prevent default scrolling on desktop
         e.preventDefault();
 
         // Check both vertical (deltaY) and horizontal (deltaX) scroll
-        // Trackpad gestures can send both, so we prioritize the larger one
         const deltaY = e.deltaY || e.detail || -e.wheelDelta || 0;
         const deltaX = e.deltaX || 0;
         
@@ -218,26 +235,56 @@ document.addEventListener('DOMContentLoaded', function() {
         let direction = 0;
         
         if (absDeltaY > absDeltaX) {
-            // Vertical scroll: down/right = next page, up/left = previous page
             direction = deltaY > 0 ? 1 : -1;
         } else if (absDeltaX > 0) {
-            // Horizontal scroll: right/down = next page, left/up = previous page
             direction = deltaX > 0 ? 1 : -1;
         } else {
-            // No significant movement
             return;
         }
 
         handleNavigation(direction);
     }
 
-    // Add wheel event listeners (cross-browser compatibility)
-    window.addEventListener('wheel', handleWheel, { passive: false });
-    window.addEventListener('mousewheel', handleWheel, { passive: false });
-    window.addEventListener('DOMMouseScroll', handleWheel, { passive: false });
+    // Track if wheel listeners are attached
+    let wheelListenersAttached = false;
+    
+    // Conditionally add/remove wheel event listeners based on screen size
+    function setupWheelListeners() {
+        const isDesktop = window.innerWidth > 768;
+        
+        if (isDesktop && !wheelListenersAttached) {
+            // Attach listeners for desktop
+            window.addEventListener('wheel', handleWheel, { passive: false });
+            window.addEventListener('mousewheel', handleWheel, { passive: false });
+            window.addEventListener('DOMMouseScroll', handleWheel, { passive: false });
+            wheelListenersAttached = true;
+        } else if (!isDesktop && wheelListenersAttached) {
+            // Remove listeners for mobile
+            window.removeEventListener('wheel', handleWheel);
+            window.removeEventListener('mousewheel', handleWheel);
+            window.removeEventListener('DOMMouseScroll', handleWheel);
+            wheelListenersAttached = false;
+        }
+    }
+    
+    // Setup listeners on load
+    setupWheelListeners();
+    
+    // Re-check on resize (with debounce)
+    let wheelResizeTimeout;
+    window.addEventListener('resize', function() {
+        isMobileSize = window.innerWidth <= 768;
+        clearTimeout(wheelResizeTimeout);
+        wheelResizeTimeout = setTimeout(setupWheelListeners, 250);
+    });
 
-    // Keyboard navigation
+    // Keyboard navigation (DESKTOP ONLY)
     document.addEventListener('keydown', function(e) {
+        // On mobile/tablet (below 768px), disable keyboard page navigation
+        if (window.innerWidth <= 768) {
+            return;
+        }
+
         // EARLY EXIT: If already transitioning, prevent default and return immediately
         if (isTransitioning) {
             if (e.key === 'ArrowDown' || e.key === 'ArrowRight' || e.key === 'PageDown' ||
@@ -259,33 +306,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Touch swipe support for mobile (optional)
-    let touchStartY = 0;
-    let touchEndY = 0;
-
-    document.addEventListener('touchstart', function(e) {
-        touchStartY = e.changedTouches[0].screenY;
-    }, { passive: true });
-
-    document.addEventListener('touchend', function(e) {
-        touchEndY = e.changedTouches[0].screenY;
-        handleSwipe();
-    }, { passive: true });
-
-    function handleSwipe() {
-        const swipeThreshold = 50;
-        const diff = touchStartY - touchEndY;
-
-        if (Math.abs(diff) > swipeThreshold) {
-            if (diff > 0) {
-                // Swipe up - next page
-                goToPage(currentPage + 1);
-            } else {
-                // Swipe down - previous page
-                goToPage(currentPage - 1);
-            }
-        }
-    }
+    // Mobile: NO touch swipe - only arrow buttons change pages
+    // Content scrolling is handled naturally within each page section
 
     // Initialize first page
     goToPage(0);

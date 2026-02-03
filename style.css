@@ -8,12 +8,34 @@ h1, h2, h3, h4, h5, h6, p, span, div, a {
     font-family: 'Cormorant', serif !important;
 }
 
-/* Disable browser scroll */
+/* Disable browser scroll on desktop */
 html, body {
     overflow: hidden;
     height: 100%;
     width: 100%;
-    position: fixed;
+}
+
+/* Desktop: fixed positioning for page transitions */
+@media (min-width: 769px) {
+    html, body {
+        position: fixed;
+    }
+}
+
+/* Mobile: allow scrolling within pages */
+@media (max-width: 768px) {
+    html, body {
+        overflow-x: hidden;
+        overflow-y: hidden;
+        position: fixed;
+        touch-action: none;
+        overscroll-behavior: none;
+    }
+    
+    #pages-container {
+        touch-action: none;
+        overscroll-behavior: none;
+    }
 }
 
 /* Additional cross-browser compatibility fixes */
@@ -114,4 +136,145 @@ img {
 
 .nav-link:hover::after {
     width: 100%;
+}
+
+/* ========================================
+   MOBILE STYLES (Below 768px)
+   ======================================== */
+
+/* Mobile Navigation Bar - Subtle Gradient (Easily Changeable) */
+.mobile-navbar {
+    background: transparent;
+}
+
+@media (max-width: 768px) {
+    .mobile-navbar {
+        /* 
+         * NAVBAR GRADIENT CUSTOMIZATION:
+         * Transparent gradient to show content behind - improves UX
+         * Users can see content peeking through, signaling more content to scroll
+         * 
+         * Examples:
+         * - More solid: rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.4) 60%, rgba(255, 255, 255, 0) 100%
+         * - Fully transparent: rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0) 100%
+         */
+        background: linear-gradient(
+            to top, 
+            rgba(255, 255, 255, 0.5) 0%, 
+            rgba(255, 255, 255, 0.3) 40%, 
+            rgba(255, 255, 255, 0) 100%
+        );
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+    }
+}
+
+/* Mobile Page Scrolling - Content scrolls within pages */
+@media (max-width: 768px) {
+    /* Allow scrolling within each page section */
+    .page-section {
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+        scroll-behavior: smooth;
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior-y: contain;
+        touch-action: pan-y;
+        /* Remove centering - align to top for proper scrolling */
+        align-items: flex-start !important;
+        justify-content: flex-start !important;
+    }
+    
+    /* Consistent padding for all pages */
+    .page-section main {
+        padding-top: 60px !important;
+        padding-bottom: 120px !important;
+        padding-left: 20px !important;
+        padding-right: 20px !important;
+        min-height: auto !important;
+        margin-top: 10px !important;
+        /* Align content to top on mobile */
+        justify-content: flex-start !important;
+    }
+}
+
+/* Smooth scrolling behavior */
+.page-section {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Mobile Typography (Below 768px) */
+@media (max-width: 768px) {
+    /* Main headings */
+    h1 {
+        font-size: 24px !important;
+        line-height: 1.2 !important;
+    }
+    
+    /* Page 1 specific - larger header */
+    .page-section:first-child h1 {
+        font-size: 30px !important;
+        line-height: 1.15 !important;
+    }
+    
+    /* Page 3 specific - prominent quote on mobile/tablet ONLY */
+    .page-section:nth-child(3) .text-\[60px\] {
+        font-size: 32px !important;
+        color: #A40119 !important;
+        line-height: 1.2 !important;
+    }
+    
+    /* Smaller screens - reduce font size to prevent extra line breaks */
+    @media (max-width: 467px) {
+        .page-section:nth-child(3) .text-\[60px\] {
+            font-size: 24px !important;
+        }
+    }
+}
+
+/* Desktop: Reset page 3 quote to default (above 768px) */
+@media (min-width: 769px) and (max-width: 1023px) {
+    .page-section:nth-child(3) .text-\[60px\] {
+        font-size: 38px !important;
+        color: #A40119 !important;
+    }
+}
+
+@media (min-width: 1024px) {
+    .page-section:nth-child(3) .text-\[60px\] {
+        font-size: 42px !important;
+        color: #474747 !important;
+    }
+}
+    
+    /* Subheadings */
+    h2 {
+        font-size: 20px !important;
+        line-height: 1.3 !important;
+    }
+    
+    /* Smaller headings */
+    h3 {
+        font-size: 16px !important;
+        line-height: 1.4 !important;
+    }
+    
+    /* Body text */
+    p {
+        font-size: 15px !important;
+        line-height: 1.6 !important;
+    }
+    
+    /* Ensure images are responsive on mobile */
+    img {
+        max-width: 100% !important;
+        height: auto !important;
+    }
+}
+
+/* Mobile Menu Icon (smaller padding) */
+@media (max-width: 768px) {
+    header {
+        padding: 20px !important;
+    }
 }
