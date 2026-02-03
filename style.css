@@ -268,7 +268,7 @@ img {
 
 @media (min-width: 1024px) {
     .page-section:nth-child(3) .text-\[60px\] {
-        font-size: 42px !important;
+        font-size: 30px !important;
         color: #474747 !important;
     }
 }
