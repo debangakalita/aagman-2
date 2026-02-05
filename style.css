@@ -62,17 +62,6 @@ img {
     }
 }
 
-/* Page 1: Bottom align text with image on screens taller than 850px */
-@media (min-height: 851px) {
-    .page-section:first-child main {
-        align-items: flex-end !important;
-    }
-    
-    .page-section:first-child main > div:first-child {
-        align-items: flex-end !important;
-    }
-}
-
 /* Page transition styles */
 .page-section {
     will-change: transform, opacity;
@@ -384,5 +373,17 @@ img {
     .page-section:nth-child(5) header .flex.items-center.gap-2,
     .page-section:nth-child(6) header .flex.items-center.gap-2 {
         gap: 6px !important;
+    }
+}
+
+/* Desktop: Page 1 text alignment fix for tall screens */
+@media (min-width: 1024px) {
+    .page-section:first-child main > div:nth-child(2) {
+        align-items: flex-start !important;
+    }
+    
+    .page-section:first-child main > div:nth-child(2) h1,
+    .page-section:first-child main > div:nth-child(2) p {
+        text-align: left !important;
     }
 }
